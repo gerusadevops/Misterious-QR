@@ -34,7 +34,12 @@
       border-radius: 12px;
       text-decoration: none;
     }
-    img { width: 220px; height: 220px; display: block; }
+    .qr-code,
+    .qr-code svg {
+      width: 220px;
+      height: 220px;
+      display: block;
+    }
     .note {
       margin-top: 1rem;
       font-size: 0.92rem;
@@ -47,16 +52,32 @@
     <h1>Desbloquea una tarifa especial para tu proximo viaje</h1>
     <p>Escanea el codigo y accede a una promocion por tiempo limitado con beneficios exclusivos en tu reserva.</p>
     <a class="qr-link" id="qr-link" href="data-download/" aria-label="Ver oferta exclusiva">
-      <img id="qr-image" alt="Codigo QR de oferta exclusiva">
+      <div class="qr-code" id="qr-code" aria-hidden="true"></div>
     </a>
     <p class="note">Disponible por tiempo limitado. Aplican terminos y condiciones.</p>
   </main>
+  <script src="vendor/qrcode-generator.js"></script>
   <script>
     (function () {
       var target = new URL('data-download/', window.location.href).href;
-      var qr = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(target);
+      var qrRoot = document.getElementById('qr-code');
       document.getElementById('qr-link').href = target;
-      document.getElementById('qr-image').src = qr;
+
+      if (typeof qrcode !== 'function') {
+        qrRoot.textContent = 'QR no disponible';
+        return;
+      }
+
+      var qr = qrcode(0, 'M');
+      qr.addData(target);
+      qr.make();
+      qrRoot.innerHTML = qr.createSvgTag({
+        cellSize: 4,
+        margin: 0,
+        scalable: true,
+        alt: 'Codigo QR de oferta exclusiva',
+        title: 'Codigo QR de oferta exclusiva'
+      });
     })();
   </script>
 </body>
