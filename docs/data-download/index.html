@@ -10,12 +10,44 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: #020807;
+      min-height: 100dvh;
+      background:
+        radial-gradient(circle at top, rgba(127, 29, 29, 0.22), transparent 34%),
+        radial-gradient(circle at bottom, rgba(34, 197, 94, 0.12), transparent 38%),
+        linear-gradient(180deg, #020403 0%, #010806 55%, #020302 100%);
       color: #22c55e;
       font-family: "Courier New", monospace;
       overflow: hidden;
       display: grid;
       place-items: center;
+      position: relative;
+    }
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+    body::before {
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02) 0,
+          rgba(255, 255, 255, 0.02) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      opacity: 0.28;
+      mix-blend-mode: screen;
+      animation: scanlines 8s linear infinite;
+    }
+    body::after {
+      background:
+        linear-gradient(90deg, transparent 0%, rgba(239, 68, 68, 0.08) 48%, transparent 52%),
+        radial-gradient(circle, rgba(34, 197, 94, 0.08), transparent 60%);
+      opacity: 0.55;
+      animation: alertSweep 5.5s linear infinite;
     }
     #matrix {
       position: fixed;
@@ -27,33 +59,205 @@
       line-height: 1.08;
       user-select: none;
       filter: blur(0.2px);
+      text-shadow: 0 0 8px rgba(34, 197, 94, 0.12);
+      animation: matrixPulse 0.18s steps(2) infinite;
     }
     .panel {
       position: relative;
       width: min(92vw, 720px);
-      border: 1px solid rgba(34, 197, 94, 0.5);
-      background: rgba(2, 16, 12, 0.86);
+      max-height: min(90vh, 90dvh);
+      border: 1px solid rgba(34, 197, 94, 0.45);
+      background:
+        linear-gradient(180deg, rgba(2, 16, 12, 0.92), rgba(1, 8, 6, 0.94)),
+        rgba(2, 16, 12, 0.86);
       padding: 1.4rem;
-      box-shadow: 0 0 35px rgba(16, 185, 129, 0.25);
+      box-shadow:
+        0 0 35px rgba(16, 185, 129, 0.22),
+        0 0 80px rgba(127, 29, 29, 0.2),
+        inset 0 0 20px rgba(34, 197, 94, 0.08);
       z-index: 1;
+      overflow: hidden;
+      animation: panelFlicker 4.5s linear infinite;
     }
-    .header { margin: 0 0 0.9rem; color: #86efac; }
-    .line { min-height: 1.4rem; }
+    .panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(239, 68, 68, 0.08) 48%, transparent 66%);
+      transform: translateX(-120%);
+      animation: panelSweep 4.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .header {
+      margin: 0 0 0.9rem;
+      color: #bbf7d0;
+      font-size: clamp(1rem, 4.2vw, 2rem);
+      letter-spacing: 0.18em;
+      text-shadow: -1px 0 rgba(239, 68, 68, 0.45), 1px 0 rgba(34, 197, 94, 0.45), 0 0 18px rgba(34, 197, 94, 0.25);
+      animation: glitch 1.8s steps(2) infinite;
+    }
+    .console {
+      position: relative;
+      height: min(44vh, 20rem);
+      min-height: 13rem;
+      max-height: min(52vh, 24rem);
+      border: 1px solid rgba(34, 197, 94, 0.18);
+      background: rgba(0, 0, 0, 0.34);
+      box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+    .logs {
+      height: 100%;
+      overflow-y: auto;
+      padding: 0.9rem 1rem 1.1rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(34, 197, 94, 0.25) transparent;
+    }
+    .logs::-webkit-scrollbar {
+      width: 0.4rem;
+    }
+    .logs::-webkit-scrollbar-thumb {
+      background: rgba(34, 197, 94, 0.2);
+    }
+    .entry {
+      min-height: 1.4rem;
+      font-size: clamp(0.76rem, 2.8vw, 0.95rem);
+      color: rgba(134, 239, 172, 0.82);
+      text-shadow: 0 0 10px rgba(74, 222, 128, 0.18);
+      opacity: 0;
+      transform: translateY(4px);
+      animation: logReveal 0.22s ease forwards;
+    }
+    .line {
+      min-height: 1.4rem;
+      position: relative;
+      font-size: clamp(0.76rem, 2.8vw, 0.95rem);
+      color: #4ade80;
+      text-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+      margin-top: 0.2rem;
+    }
+    .line::after {
+      content: '_';
+      margin-left: 0.1rem;
+      color: #f87171;
+      animation: caret 0.7s step-end infinite;
+    }
     .warn {
-      margin-top: 1rem;
-      color: #facc15;
+      margin-top: 0.85rem;
+      max-width: 34rem;
+      color: rgba(148, 163, 184, 0.52);
       font-family: Arial, sans-serif;
-      line-height: 1.4;
+      font-size: clamp(0.62rem, 2.35vw, 0.74rem);
+      line-height: 1.26;
+      letter-spacing: 0.02em;
+      opacity: 0.72;
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (max-width: 640px) {
+      body {
+        padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+        place-items: stretch;
+      }
+      .panel {
+        width: 100%;
+        margin: auto;
+        padding: 1rem;
+      }
+      .header {
+        margin-bottom: 0.7rem;
+        letter-spacing: 0.12em;
+      }
+      .console {
+        height: min(50dvh, 22rem);
+        min-height: 11rem;
+      }
+      .logs {
+        padding: 0.75rem 0.8rem 0.95rem;
+      }
+      .entry,
+      .line {
+        min-height: 1.25rem;
+        line-height: 1.35;
+      }
+      .warn {
+        margin-top: 0.7rem;
+        max-width: none;
+      }
+    }
+    @media (max-width: 380px), (max-height: 720px) {
+      .panel {
+        padding: 0.85rem;
+      }
+      .console {
+        height: min(48dvh, 19rem);
+        min-height: 9.5rem;
+      }
+      .logs {
+        padding: 0.65rem 0.7rem 0.8rem;
+      }
+      .header {
+        letter-spacing: 0.08em;
+      }
+    }
+    @keyframes scanlines {
+      from { transform: translateY(0); }
+      to { transform: translateY(12px); }
+    }
+    @keyframes alertSweep {
+      0% { transform: translateX(-30%) scaleX(0.95); opacity: 0.18; }
+      50% { transform: translateX(8%) scaleX(1.02); opacity: 0.42; }
+      100% { transform: translateX(30%) scaleX(0.98); opacity: 0.18; }
+    }
+    @keyframes matrixPulse {
+      0%, 100% { opacity: 0.92; transform: translate3d(0, 0, 0); }
+      50% { opacity: 1; transform: translate3d(0.6px, 0, 0); }
+    }
+    @keyframes panelFlicker {
+      0%, 19%, 21%, 60%, 62%, 100% { opacity: 1; }
+      20%, 61% { opacity: 0.94; }
+    }
+    @keyframes panelSweep {
+      0%, 100% { transform: translateX(-120%); opacity: 0; }
+      18% { opacity: 0; }
+      32% { opacity: 1; }
+      55% { transform: translateX(120%); opacity: 0.3; }
+      56%, 100% { opacity: 0; }
+    }
+    @keyframes glitch {
+      0%, 100% { transform: translateX(0); }
+      18% { transform: translateX(0.5px); }
+      19% { transform: translateX(-1.5px); }
+      20% { transform: translateX(1px); }
+      55% { transform: translateX(0); }
+      56% { transform: translateX(-1px); }
+      57% { transform: translateX(1.5px); }
+      58% { transform: translateX(0); }
+    }
+    @keyframes caret {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    @keyframes logReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 <body>
   <pre id="matrix" aria-hidden="true"></pre>
   <section class="panel" role="status" aria-live="polite">
-    <h1 class="header">:: INICIALIZANDO ACCESO ::</h1>
-    <div class="line" id="typed"></div>
+    <h1 class="header">:: ACCESO GARANTIZADO ::</h1>
+    <div class="console">
+      <div class="logs" id="logs">
+        <div class="line" id="typed"></div>
+      </div>
+    </div>
     <p class="warn">
-      ⚠️ Esto es una simulación educativa. Un enlace malicioso podría robar información real.
+      Esto es una simulación educativa. Un enlace malicioso podría robar información real.
       Verifica siempre la URL antes de abrir cualquier QR.
     </p>
   </section>
@@ -61,27 +265,50 @@
   <script>
     (function () {
       var messages = [
-        'Accediendo a cuentas bancarias...',
-        'Descargando imágenes personales...',
-        'Extrayendo contactos y conversaciones...',
-        'Copiando credenciales guardadas...',
-        'Enviando datos a servidor externo...'
+        '[root@edge-node-07] Elevando privilegios del entorno comprometido...',
+        '[daemon://wallet-sync] Enumerando sesiones bancarias activas...',
+        '[vault.proc] Clonando credenciales almacenadas en el navegador...',
+        '[mesh-relay-4] Empaquetando contactos, chats y metadatos...',
+        '[sys/kernel_proxy] Inyectando persistencia en procesos del usuario...',
+        '[exfil.gateway] Subiendo galeria privada al nodo remoto 185.22.91.44...',
+        '[scanner.qr-hook] Interceptando tokens de autenticacion recientes...',
+        '[dns/tunnel-alpha] Derivando trafico por canal cifrado secundario...',
+        '[archive.bot] Indexando documentos locales y archivos sensibles...',
+        '[remote-shell@shadow] Sincronizando libreta de contrasenas comprometida...',
+        '[observer.feed] Capturando portapapeles, autofill y cookies de sesion...',
+        '[dropper.init] Preparando lote de exportacion para servidor externo...'
       ];
+      var logs = document.getElementById('logs');
       var line = document.getElementById('typed');
-      var msg = 0, ch = 0, deleting = false;
+      var msg = 0, ch = 0;
+
+      function scrollLogs() {
+        logs.scrollTop = logs.scrollHeight;
+      }
+
+      function appendEntry(text) {
+        var entry = document.createElement('div');
+        entry.className = 'entry';
+        entry.textContent = '> ' + text;
+        logs.insertBefore(entry, line);
+        scrollLogs();
+      }
 
       function typeLoop() {
         var text = messages[msg];
-        if (!deleting) {
-          ch++;
-          line.textContent = '> ' + text.slice(0, ch);
-          if (ch === text.length) { deleting = true; setTimeout(typeLoop, 900); return; }
-        } else {
-          ch--;
-          line.textContent = '> ' + text.slice(0, ch);
-          if (ch === 0) { deleting = false; msg = (msg + 1) % messages.length; }
+        ch++;
+        line.textContent = '> ' + text.slice(0, ch);
+        scrollLogs();
+
+        if (ch === text.length) {
+          appendEntry(text);
+          line.textContent = '';
+          ch = 0;
+          msg = (msg + 1) % messages.length;
+          setTimeout(typeLoop, 120);
+          return;
         }
-        setTimeout(typeLoop, deleting ? 35 : 55);
+        setTimeout(typeLoop, 18);
       }
       typeLoop();
 
