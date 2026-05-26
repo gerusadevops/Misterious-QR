@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Escanea para tu descuento</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #1e293b, #020617 70%);
+      color: #e2e8f0;
+    }
+    main {
+      text-align: center;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 2rem 1.5rem;
+      width: min(92vw, 460px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+    h1 { margin-top: 0; font-size: 1.4rem; }
+    p { color: #cbd5e1; line-height: 1.5; }
+    a.qr-link {
+      display: inline-block;
+      margin: 1rem 0;
+      padding: 0.6rem;
+      background: #fff;
+      border-radius: 12px;
+      text-decoration: none;
+    }
+    img { width: 220px; height: 220px; display: block; }
+    .note {
+      margin-top: 1rem;
+      font-size: 0.92rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Escanea el QR para obtener un descuento en tu próximo vuelo</h1>
+    <p>Parece una oferta excelente... ¿te atreves a escanear?</p>
+    <a class="qr-link" id="qr-link" href="data-download/" aria-label="Abrir contenido del QR">
+      <img id="qr-image" alt="Código QR de descuento">
+    </a>
+    <p class="note">Este ejemplo es educativo para concientizar sobre enlaces sospechosos.</p>
+  </main>
+  <script>
+    (function () {
+      var target = new URL('data-download/', window.location.href).href;
+      var qr = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(target);
+      document.getElementById('qr-link').href = target;
+      document.getElementById('qr-image').src = qr;
+    })();
+  </script>
+</body>
+</html>
